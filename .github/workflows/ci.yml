@@ -25,9 +25,21 @@ jobs:
       with:
         dotnet-version: '6.0.x'
         include-prerelease: true
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+          node-version: 'lts/*' # latest LTS version
+    - name: Install @asyncapi/cli
+      run: npm install -g @asyncapi/cli
+
     - name: Restore dependencies
       run: dotnet restore     
     - name: Build
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+
+    - name: Read and write spec
+      run:  dotnet run --project ./test/LEGO.AsyncAPI.CITestHelper/LEGO.AsyncAPI.CITestHelper.csproj --no-build --verbosity normal
+    - name: Validate spec
+      run: asyncapi validate streetlights-kafka.yml
